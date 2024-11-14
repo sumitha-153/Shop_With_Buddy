@@ -27,7 +27,6 @@ export default async function handler(req, res) {
 
     const favorites = user.favorites || [];
     if (favorites.includes(productId)) {
-      // Remove from favorites
       await db.collection('users').updateOne(
         { name },
         { $pull: { favorites: productId } }
