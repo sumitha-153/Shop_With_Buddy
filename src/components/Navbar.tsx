@@ -1,7 +1,7 @@
 
 import React, { useState,useEffect } from 'react';
 import Link from 'next/link';
-import { Heart, ShoppingCart, Package, Search, User, Menu } from 'lucide-react';
+import { Heart, ShoppingCart, Package, User, Menu } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '../context/AuthContext';
@@ -15,12 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import FilterPanel from './FilterPanel';
+import {useRouter} from 'next/router';
 
 interface NavbarProps {
-  isAuthenticated: boolean;
-  userName: string;
-  favoritesCount: number;
-  cartCount: number;
+  readonly isAuthenticated: boolean;
+  readonly userName: string;
+  readonly favoritesCount: number;
+  readonly cartCount: number;
 }
 
 export default function Navbar({ isAuthenticated, userName, favoritesCount, cartCount }: NavbarProps) {
@@ -50,6 +51,8 @@ export default function Navbar({ isAuthenticated, userName, favoritesCount, cart
     shippingInformation: string,
     returnPolicy: string,
   }> | null>(null)
+  const router =useRouter(); 
+  
 
   const { logout } = useAuth();
 
@@ -64,9 +67,9 @@ export default function Navbar({ isAuthenticated, userName, favoritesCount, cart
     }
   }, [searchQuery, data]);
 
-  const handleSearchSubmit =(e)=>{
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // router.push(`/search?q=${searchQuery}`);
+    router.push(`/search?q=${searchQuery}`);
   }
  
 
