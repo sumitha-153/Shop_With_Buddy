@@ -3,19 +3,18 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import SkeletonLoader from '../components/SkeletonLoader'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { User, Mail, Phone, MapPin, Globe, Building, Home, CreditCard } from 'lucide-react'
+import { User, Mail, Phone, MapPin } from 'lucide-react'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-interface shippingInfo {
+interface ShippingInfo {
   address: string
   city: string
   postalCode: string
@@ -27,7 +26,7 @@ interface UserData {
   name: string
   email: string
   phone: string
-  shippingInfo: shippingInfo[]
+  shippingInfo: ShippingInfo[]
   paymentInfo:{
     cardNumber:string
     expiryDate:string
@@ -77,16 +76,13 @@ export default function Profile() {
   const [user, setUser] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [ShippingInfo, setShippingInfo] = useState<shippingInfo[]>([])
+  const [shippingInfo, setShippingInfo] = useState<ShippingInfo[]>([])
   const [defaultAddressIndex, setDefaultAddressIndex] = useState(0)
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(`/api/user?name=${encodeURIComponent(userName)}`)
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch user data')
-        // }
         const data = await response.json()
         setUser(data)
       } catch (err) {
@@ -142,6 +138,13 @@ export default function Profile() {
     setDefaultAddressIndex(index);
   };
   console.log(user?.shippingInfo[0]?.address);
+  console.log(defaultAddressIndex);
+  console.log(user?.shippingInfo[defaultAddressIndex]?.address);
+  console.log(user?.shippingInfo?.length);
+  console.log(user?.shippingInfo);
+  
+  
+  
   
 
   if (loading) return <SkeletonLoader />
@@ -156,7 +159,7 @@ export default function Profile() {
               <div className="flex flex-col items-center sm:flex-row sm:items-start">
                 <Avatar className="w-24 h-24 mb-4 sm:mb-0 sm:mr-6">
                   <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${user?.name}`} alt={user?.name} />
-                  <AvatarFallback>{user?.name?.charAt(0) || 'S'}</AvatarFallback>
+                  <AvatarFallback>{user?.name?.charAt(0) || 'UN'}</AvatarFallback>
                 </Avatar>
                 <div className="text-center sm:text-left">
                   <h1 className="text-3xl font-bold mb-2">{user?.name}</h1>
@@ -164,7 +167,6 @@ export default function Profile() {
                     <Mail className="w-4 h-4 mr-2" />
                     {user?.email}
                   </p>
-                  {/* <Button>Edit Profile</Button> */}
                 </div>
               </div>
             </CardContent>
@@ -288,7 +290,7 @@ export default function Profile() {
               </Card>
             </TabsContent>
             <TabsContent value="shipping">
-            {user?.shippingInfo?.length ?? 0 > 0 ? (
+            {user?.shippingInfo?.length && user.shippingInfo.length > 0 ? (
               <>
                 <Card className="mb-4">
                   <CardHeader>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/router'
 import { useAuth } from '../context/AuthContext'
+import {signIn} from 'next-auth/react'
 
 export default function SignIn() {
   const { setUser, isAuthenticated } = useAuth()
@@ -24,35 +25,49 @@ export default function SignIn() {
 
     console.log("Inside signin.tsx: "+isAuthenticated);
     
-    try {
-      const response = await fetch('/api/authenticate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
+    // try {
+    //   const response = await fetch('/api/authenticate', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ email, password }),
+    //   })
 
-      if (!response.ok) {
-        throw new Error('Invalid email or password')
-      }
+    //   if (!response.ok) {
+    //     throw new Error('Invalid email or password')
+    //   }
 
-      const userData = await response.json()
-      setUser({ name: userData.name, favorites: userData.favorites })
-      // setIsAuthenticated(true)
+    //   const userData = await response.json()
+    //   setUser({ name: userData.name, favorites: userData.favorites, cart: userData.cart })
+    //   // setIsAuthenticated(true)
 
-      const expirationTime = new Date().getTime() + 60 * 60 * 1000
-      localStorage.setItem('expirationTime', expirationTime.toString())
+    //   const expirationTime = new Date().getTime() + 60 * 60 * 1000
+    //   localStorage.setItem('expirationTime', expirationTime.toString())
 
+    //   router.push('/')
+    // } catch (err) {
+    //   if (err instanceof Error) {
+    //     setError(err.message)
+    //   } else {
+    //     setError('An unknown error occurred')
+    //   }
+    // }
+
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password
+    })
+
+    if (result?.error) {
+      setError(result.error)
+    } else {
       router.push('/')
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unknown error occurred')
-      }
     }
   }
+  
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

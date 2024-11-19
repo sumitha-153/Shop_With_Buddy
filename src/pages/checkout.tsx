@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -8,11 +7,11 @@ import { toast } from 'react-toastify'
 import { CreditCard, MapPin, Info, ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
+// import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/context/AuthContext'
 import ProductSummary from '@/components/CheckoutProduct'
 
@@ -21,7 +20,7 @@ const countries = [
   { code: 'CA', name: 'Canada' },
   { code: 'GB', name: 'United Kingdom' },
   { code: 'AU', name: 'Australia' },
-  { code: 'India', name: 'India' },
+  { code: 'IN', name: 'India' },
   { code: 'DE', name: 'Germany' },
   { code: 'FR', name: 'France' },
 ]
@@ -34,10 +33,10 @@ const states = {
     { code: 'FL', name: 'Florida' },
     { code: 'IL', name: 'Illinois' },
   ],
-  India: [
-    { code: 'Tamil Nadu', name: 'Tamil Nadu' },
-    { code: 'Karnataka', name: 'Karnataka' },
-    { code: 'Maharastara', name: 'Maharashtra' },
+  IN: [
+    { code: 'TN', name: 'Tamil Nadu' },
+    { code: 'KA', name: 'Karnataka' },
+    { code: 'MH', name: 'Maharashtra' },
   ],
 }
 
@@ -45,7 +44,6 @@ export default function Checkout() {
   const router = useRouter()
   const { userName } = useAuth()
   const [productId, setProductId] = useState<string | null>(null)
- 
   const [product, setProduct] = useState<{
     images: string[],
     title: string,
@@ -59,14 +57,7 @@ export default function Checkout() {
     returnPolicy: string,
   } | null>(null)
 
-
-  const [shippingInfo, setShippingInfo] = useState({
-    address: '',
-    city: '',
-    postalCode: '',
-    country: '',
-    state: '',
-  })
+  const [shippingInfo, setShippingInfo] = useState<{ address: string, city: string, postalCode: string, country: string, state: string }[]>([])
   const [paymentInfo, setPaymentInfo] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -78,6 +69,7 @@ export default function Checkout() {
   const [totalCost, setTotalCost] = useState<number>(0)
   const [quantity, setQuantity] = useState<number>(1)
   const [currentStep, setCurrentStep] = useState(1)
+  const [defaultAddressIndex, setDefaultAddressIndex] = useState(0)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -106,7 +98,6 @@ export default function Checkout() {
     fetchUserData()
   }, [userName])
 
-
   useEffect(() => {
     if (productId) {
       const fetchProduct = async () => {
@@ -126,27 +117,33 @@ export default function Checkout() {
     }
   }, [productId])
 
-
-
-
-
-  const handleInputChange = (name: string, value: string, setState: React.Dispatch<React.SetStateAction<any>>) => {
-    setState((prevState: any) => ({ ...prevState, [name]: value }))
+  const handleInputChange = (name: string, value: string, index?: number) => {
+    if (index !== undefined) {
+      setShippingInfo((prevState) => {
+        const updatedShippingInfo = Array.isArray(prevState) ? [...prevState] : []
+        updatedShippingInfo[index] = { ...updatedShippingInfo[index], [name]: value }
+        return updatedShippingInfo
+      })
+    } else {
+      setPaymentInfo((prevState) => ({ ...prevState, [name]: value }))
+    }
   }
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {}
-    if (!shippingInfo.address) newErrors.address = 'Address is required.'
-    if (!shippingInfo.city) newErrors.city = 'City is required.'
-    if (!shippingInfo.postalCode) newErrors.postalCode = 'Postal code is required.'
-    if (!shippingInfo.country) newErrors.country = 'Country is required.'
-    if (!shippingInfo.state) newErrors.state = 'State is required.'
+    if (!shippingInfo[defaultAddressIndex]?.address) newErrors.address = 'Address is required.'
+    if (!shippingInfo[defaultAddressIndex]?.city) newErrors.city = 'City is required.'
+    if (!shippingInfo[defaultAddressIndex]?.postalCode) newErrors.postalCode = 'Postal code is required.'
+    if (!shippingInfo[defaultAddressIndex]?.country) newErrors.country = 'Country is required.'
+    if (!shippingInfo[defaultAddressIndex]?.state) newErrors.state = 'State is required.'
     if (!paymentInfo.cardNumber) newErrors.cardNumber = 'Card number is required.'
+    else if (!/^\d{4} \d{4} \d{4} \d{4}$/.test(paymentInfo.cardNumber)) newErrors.cardNumber = 'Card number must be in the format 1234 5678 9012 3456.'
     if (!paymentInfo.expiryDate) newErrors.expiryDate = 'Expiry date is required.'
+    else if (!/^\d{2}\/\d{2}$/.test(paymentInfo.expiryDate)) newErrors.expiryDate = 'Expiry date must be in the format MM/YY.'
     if (!paymentInfo.cvv) newErrors.cvv = 'CVV is required.'
+    else if (!/^\d{3}$/.test(paymentInfo.cvv)) newErrors.cvv = 'CVV must be a 3-digit number.'
     return newErrors
   }
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -163,11 +160,12 @@ export default function Checkout() {
         body: JSON.stringify({
           userName,
           productId: parseInt(productId as string, 10),
-          shippingInfo,
+          shippingInfo: shippingInfo[defaultAddressIndex],
           quantity,
           totalCost,
           paymentInfo,
-          image:product?.images[0],
+          image: product?.images[0],
+          status: 'Processing',
         }),
       })
       if (!response.ok) throw new Error('Failed to place order')
@@ -201,6 +199,34 @@ export default function Checkout() {
   const handleNextStep = () => setCurrentStep((prevStep) => prevStep + 1)
   const handlePreviousStep = () => setCurrentStep((prevStep) => prevStep - 1)
 
+  const handleDefaultAddressChange = (index: number) => {
+    setDefaultAddressIndex(index)
+  }
+
+  const handleAddAddress = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userName,
+          address: shippingInfo[defaultAddressIndex].address,
+          city: shippingInfo[defaultAddressIndex].city,
+          postalCode: shippingInfo[defaultAddressIndex].postalCode,
+          country: shippingInfo[defaultAddressIndex].country,
+          state: shippingInfo[defaultAddressIndex].state,
+        }),
+      })
+      const data = await response.json()
+      setShippingInfo((prev) => [...prev, data])
+      setIsEditingShipping(false)
+    } catch (error) {
+      console.error('Failed to add address:', error)
+      toast.error('Failed to add address.')
+    }
+  }
+
   return (
     <div className="container mx-auto p-6 max-w-3xl">
       <Card className="mb-6">
@@ -230,11 +256,11 @@ export default function Checkout() {
           <CardContent>
             {!isEditingShipping ? (
               <div className="space-y-2">
-                <p><strong>Address:</strong> {shippingInfo.address}</p>
-                <p><strong>City:</strong> {shippingInfo.city}</p>
-                <p><strong>Postal Code:</strong> {shippingInfo.postalCode}</p>
-                <p><strong>Country:</strong> {shippingInfo.country}</p>
-                <p><strong>State:</strong> {shippingInfo.state}</p>
+                <CardContent className="text-sm text-gray-600">
+                  <p className="font-medium text-gray-800">{shippingInfo[defaultAddressIndex]?.address}</p>
+                  <p>{shippingInfo[defaultAddressIndex]?.city}, {shippingInfo[defaultAddressIndex]?.state} {shippingInfo[defaultAddressIndex]?.postalCode}</p>
+                  <p>{shippingInfo[defaultAddressIndex]?.country}</p>
+                </CardContent>
                 <Button variant="outline" onClick={() => setIsEditingShipping(true)}>Change Address</Button>
               </div>
             ) : (
@@ -244,8 +270,8 @@ export default function Checkout() {
                   <Input
                     id="address"
                     name="address"
-                    value={shippingInfo.address}
-                    onChange={(e) => handleInputChange('address', e.target.value, setShippingInfo)}
+                    value={shippingInfo[defaultAddressIndex]?.address}
+                    onChange={(e) => handleInputChange('address', e.target.value, defaultAddressIndex)}
                     placeholder="123 Main St"
                     required
                   />
@@ -256,8 +282,8 @@ export default function Checkout() {
                   <Input
                     id="city"
                     name="city"
-                    value={shippingInfo.city}
-                    onChange={(e) => handleInputChange('city', e.target.value, setShippingInfo)}
+                    value={shippingInfo[defaultAddressIndex]?.city}
+                    onChange={(e) => handleInputChange('city', e.target.value, defaultAddressIndex)}
                     placeholder="New York"
                     required
                   />
@@ -268,8 +294,8 @@ export default function Checkout() {
                   <Input
                     id="postalCode"
                     name="postalCode"
-                    value={shippingInfo.postalCode}
-                    onChange={(e) => handleInputChange('postalCode', e.target.value, setShippingInfo)}
+                    value={shippingInfo[defaultAddressIndex]?.postalCode}
+                    onChange={(e) => handleInputChange('postalCode', e.target.value, defaultAddressIndex)}
                     placeholder="10001"
                     required
                   />
@@ -278,8 +304,8 @@ export default function Checkout() {
                 <div className="space-y-2">
                   <Label htmlFor="country">Country</Label>
                   <Select
-                    value={shippingInfo.country}
-                    onValueChange={(value) => handleInputChange('country', value, setShippingInfo)}
+                    value={shippingInfo[defaultAddressIndex]?.country}
+                    onValueChange={(value) => handleInputChange('country', value, defaultAddressIndex)}
                   >
                     <SelectTrigger id="country">
                       <SelectValue placeholder="Select Country" />
@@ -297,16 +323,16 @@ export default function Checkout() {
                 <div className="space-y-2">
                   <Label htmlFor="state">State</Label>
                   <Select
-                    value={shippingInfo.state}
-                    onValueChange={(value) => handleInputChange('state', value, setShippingInfo)}
-                    disabled={!shippingInfo.country || !states[shippingInfo.country as keyof typeof states]}
+                    value={shippingInfo[defaultAddressIndex]?.state}
+                    onValueChange={(value) => handleInputChange('state', value, defaultAddressIndex)}
+                    disabled={!shippingInfo[defaultAddressIndex]?.country || !states[shippingInfo[defaultAddressIndex]?.country as keyof typeof states]}
                   >
                     <SelectTrigger id="state">
                       <SelectValue placeholder="Select State" />
                     </SelectTrigger>
                     <SelectContent>
-                      {shippingInfo.country &&
-                        states[shippingInfo.country as keyof typeof states]?.map((state) => (
+                      {shippingInfo[defaultAddressIndex]?.country &&
+                        states[shippingInfo[defaultAddressIndex]?.country as keyof typeof states]?.map((state) => (
                           <SelectItem key={state.code} value={state.code}>
                             {state.name}
                           </SelectItem>
@@ -341,59 +367,44 @@ export default function Checkout() {
             <CardTitle>Payment Information</CardTitle>
           </CardHeader>
           <CardContent>
-            {!isEditingPayment ? (
+            <form onSubmit={handleUpdateInfo} className="space-y-4">
               <div className="space-y-2">
-                <p><strong>Card Number:</strong> **** **** **** {paymentInfo.cardNumber.slice(-4)}</p>
-                <p><strong>Expiry Date:</strong> {paymentInfo.expiryDate}</p>
-                <p><strong>CVV:</strong> ***</p>
-                <Button variant="outline" onClick={() => setIsEditingPayment(true)}>Change Payment Info</Button>
+                <Label htmlFor="cardNumber">Card Number</Label>
+                <Input
+                  id="cardNumber"
+                  name="cardNumber"
+                  value={paymentInfo.cardNumber}
+                  onChange={(e) => handleInputChange('cardNumber', e.target.value)}
+                  placeholder="1234 5678 9012 3456"
+                  required
+                />
+                {errors.cardNumber && <p className="text-sm text-red-500">{errors.cardNumber}</p>}
               </div>
-            ) : (
-              <form onSubmit={handleUpdateInfo} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cardNumber">Card Number</Label>
-                  <Input
-                    id="cardNumber"
-                    name="cardNumber"
-                    value={paymentInfo.cardNumber}
-                    onChange={(e) => handleInputChange('cardNumber', e.target.value, setPaymentInfo)}
-                    placeholder="1234 5678 9012 3456"
-                    required
-                  />
-                  {errors.cardNumber && <p className="text-sm text-red-500">{errors.cardNumber}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="expiryDate">Expiry Date</Label>
-                  <Input
-                    id="expiryDate"
-                    name="expiryDate"
-                    value={paymentInfo.expiryDate}
-                    onChange={(e) => handleInputChange('expiryDate', e.target.value, setPaymentInfo)}
-                    placeholder="MM/YY"
-                    required
-                  />
-                  {errors.expiryDate && <p className="text-sm text-red-500">{errors.expiryDate}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input
-                    id="cvv"
-                    name="cvv"
-                    value={paymentInfo.cvv}
-                    onChange={(e) => handleInputChange('cvv', e.target.value, setPaymentInfo)}
-                    placeholder="123"
-                    required
-                  />
-                  {errors.cvv && <p className="text-sm text-red-500">{errors.cvv}</p>}
-                </div>
-                <div className="flex justify-between">
-                  <Button variant="outline" onClick={() => setIsEditingPayment(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">Update</Button>
-                </div>
-              </form>
-            )}
+              <div className="space-y-2">
+                <Label htmlFor="expiryDate">Expiry Date</Label>
+                <Input
+                  id="expiryDate"
+                  name="expiryDate"
+                  value={paymentInfo.expiryDate}
+                  onChange={(e) => handleInputChange('expiryDate', e.target.value)}
+                  placeholder="MM/YY"
+                  required
+                />
+                {errors.expiryDate && <p className="text-sm text-red-500">{errors.expiryDate}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cvv">CVV</Label>
+                <Input
+                  id="cvv"
+                  name="cvv"
+                  value={paymentInfo.cvv}
+                  onChange={(e) => handleInputChange('cvv', e.target.value)}
+                  placeholder="123"
+                  required
+                />
+                {errors.cvv && <p className="text-sm text-red-500">{errors.cvv}</p>}
+              </div>
+            </form>
           </CardContent>
           {!isEditingPayment && (
             <CardFooter className="flex justify-between">

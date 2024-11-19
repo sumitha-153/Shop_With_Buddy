@@ -107,7 +107,7 @@ const shopCategories = [
   "Men's Fashion",
   "Women's Fashion",
   "Home, Kitchen, Pets",
-  "beauty", "Health", "Grocery",
+  "beauty", "Health", "groceries",
   "Sports, Fitness, Bags, Luggage",
   "Toys, Baby Products, Kids' Fashion",
   "Car, Motorbike, Industrial",

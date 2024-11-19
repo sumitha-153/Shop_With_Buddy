@@ -97,7 +97,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <img
           src={product.images[0]}
           alt={product.title}
-          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+          className="object-cover w-96 h-96 transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
         />
       </Link>

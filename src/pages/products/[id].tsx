@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Star, Truck, RotateCcw, Minus,Plus} from 'lucide-react';
+import { Star, Truck, RotateCcw, Minus,Plus,ChevronLeft,ChevronRight} from 'lucide-react';
 import SkeletonLoader from '../../components/SkeletonLoader';
 import Footer from '../../components/Footer';
 import { useAuth } from '../../context/AuthContext';
@@ -43,6 +43,10 @@ export default function ProductDetail() {
   const [error, setError] = useState('');
   const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
   const [reviews, setReviews] = useState<{ rating: number, comment: string, date: string, reviewerName: string }[]>([]);
+
+ 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
 
   const [quantity, setQuantity] = useState(1); 
   useEffect(() => {
@@ -122,6 +126,15 @@ export default function ProductDetail() {
     setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
   
+
+   const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % (product?.images?.length ?? 1));
+  };
+
+  const handlePreviousImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + (product?.images?.length ?? 1)) % (product?.images?.length ?? 1));
+  };
+
   const totalCost = product ? (product.discountedPrice ?? product.price) * quantity : 0;
 
   if (loading) return <SkeletonLoader />;
@@ -130,23 +143,44 @@ export default function ProductDetail() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <main className="container flex-1 px-4 py-8 mx-auto max-w-7xl">
-        <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 md:grid-cols-2">
           <div className="space-y-4">
             {product && (
-              <img
-                src={product.images[0]}
-                alt={product.title}
-                className="object-cover w-full rounded-lg shadow-lg aspect-square"
-              />
+              <div className="relative">
+                <img
+                  src={product.images[currentImageIndex]}
+                  alt={product.title}
+                  width={300}
+                  height={300}
+                  className="object-cover w-full rounded-lg shadow-lg aspect-square"
+                />
+                {product.images.length > 1 && (
+                  <>
+                    <Button onClick={handlePreviousImage} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
+                      <ChevronLeft className="w-6 h-6" />
+                    </Button>
+                    <Button onClick={handleNextImage} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
+                      <ChevronRight className="w-6 h-6" />
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
             <div className="grid grid-cols-4 gap-2">
-              {product?.images.slice(1, 5).map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`${product.title} - Image ${index + 2}`}
-                  className="object-cover w-full rounded-md aspect-square"
-                />
+              {product?.images.map((image, index) => (
+                <button
+                  key={image}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`object-cover w-full rounded-lg shadow-lg aspect-square cursor-pointer ${index === currentImageIndex ? 'border-2 border-blue-500' : ''}`}
+                >
+                  <img
+                    src={image}
+                    alt={`Product ${index + 1}`}
+                    width={300}
+                    height={300}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </button>
               ))}
             </div>
           </div>
@@ -178,11 +212,11 @@ export default function ProductDetail() {
                 </div>
                 <p className="text-gray-700">{product?.description}</p>
                 <div className="flex items-center space-x-4">
-                <Button onClick={handleDecreaseQuantity} className="bg-gray-200 text-gray-800 hover:bg-none hover:text-none">
+                <Button onClick={handleDecreaseQuantity} className="bg-orange-200 hover:bg-orange-500 hover:text-none">
                   <Minus className="w-4 h-4" />
                 </Button>
                 <span className="text-lg">{quantity}</span>
-                <Button onClick={handleIncreaseQuantity} className="bg-gray-200 text-gray-800 hover:bg-none hover:text-none">
+                <Button onClick={handleIncreaseQuantity} className="bg-blue-600 hover:bg-blue-800 hover:text-none">
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>

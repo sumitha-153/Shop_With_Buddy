@@ -78,21 +78,21 @@ export default function Cart() {
             cartProducts.map((product) => (
               <div key={product.id} className="flex flex-col shadow-md hover:shadow-lg transition-shadow duration-300">
                 <ProductCard product={product} />
-                <div className="flex items-center mb-2 mt-2">
+                {/* <div className="flex items-center mb-2 mt-2">
                   <button 
                     onClick={() => handleQuantityChange(product.id, -1)} 
                     className="px-2 py-1 bg-gray-300 rounded-md hover:bg-gray-400 transition-colors duration-200"
                   >
                     -
                   </button>
-                  <span className="mx-2 text-lg font-semibold">{quantities[product.id] || 1}</span> {/* Display current quantity */}
+                  <span className="mx-2 text-lg font-semibold">{quantities[product.id] || 1}</span>
                   <button 
                     onClick={() => handleQuantityChange(product.id, 1)} 
                     className="px-2 py-1 bg-gray-300 rounded-md hover:bg-gray-400 transition-colors duration-200"
                   >
                     +
                   </button>
-                </div>
+                </div> */}
               </div>
             ))
           ) : (

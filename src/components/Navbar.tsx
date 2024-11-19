@@ -5,6 +5,7 @@ import { Heart, ShoppingCart, Package, User, Menu } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '../context/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,16 +17,18 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import FilterPanel from './FilterPanel';
 import {useRouter} from 'next/router';
+import { useSession ,signOut} from 'next-auth/react';
 
 interface NavbarProps {
-  readonly isAuthenticated: boolean;
+  // readonly isAuthenticated: boolean;
   readonly userName: string;
   readonly favoritesCount: number;
   readonly cartCount: number;
 }
 
-export default function Navbar({ isAuthenticated, userName, favoritesCount, cartCount }: NavbarProps) {
+export default function Navbar({  userName, favoritesCount, cartCount }: NavbarProps) {
 
+  const {data:session,status}=useSession()
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Array<{
     title: string,
@@ -55,6 +58,7 @@ export default function Navbar({ isAuthenticated, userName, favoritesCount, cart
   
 
   const { logout } = useAuth();
+  
 
   useEffect(() => {
     if (searchQuery) {
@@ -71,7 +75,9 @@ export default function Navbar({ isAuthenticated, userName, favoritesCount, cart
     e.preventDefault();
     router.push(`/search?q=${searchQuery}`);
   }
- 
+  console.log("About session");
+  
+ console.log(session +" "+status)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg">
@@ -124,7 +130,7 @@ export default function Navbar({ isAuthenticated, userName, favoritesCount, cart
             <Link href="/products" className="hidden sm:block">
               <Button variant="ghost">Products</Button>
             </Link>
-            {isAuthenticated ? (
+            {status === 'authenticated'? (
               <>
                 <Link href="/favorites" className="relative">
                   <Button variant="ghost" size="icon" className="relative">
@@ -153,9 +159,10 @@ export default function Navbar({ isAuthenticated, userName, favoritesCount, cart
                 </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="relative">
-                      <User className="h-5 w-5" />
-                    </Button>
+                    <Avatar className="w-6 h-6 mb-4 sm:mb-0 sm:mr-6 cursor-pointer">
+                  <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${userName}`} alt={userName} />
+                  <AvatarFallback>{userName?.charAt(0) || 'S'}</AvatarFallback>
+                </Avatar>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -166,7 +173,7 @@ export default function Navbar({ isAuthenticated, userName, favoritesCount, cart
                       <span>Profile</span></Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout}>
+                    <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>

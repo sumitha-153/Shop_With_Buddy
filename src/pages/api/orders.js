@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const db = client.db('Styliee');
 
   if (req.method === 'POST') {
-    const { userName, productId, shippingInfo, paymentInfo ,quantity,totalCost,image} = req.body;
+    const { userName,status, productId, shippingInfo, paymentInfo ,quantity,totalCost,image} = req.body;
     console.log("Inside order.js");
     console.log(req.body);
     const product = await db.collection('products').findOne({ id: productId });
@@ -23,6 +23,7 @@ export default async function handler(req, res) {
       date: new Date().toISOString(),
       shippingInfo,
       paymentInfo,
+      status,
     };
 
     const user = await db.collection('users').findOne({ name: userName});

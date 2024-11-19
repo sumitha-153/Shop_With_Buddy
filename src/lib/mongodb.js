@@ -15,11 +15,12 @@ if (typeof window === 'undefined') {
     client = new MongoClient(uri, options);
     globalThis._mongoClientPromise = client.connect();
   }
-  clientPromise = global._mongoClientPromise;
+  clientPromise = globalThis._mongoClientPromise;
 } else {
   // In production mode, create a new client for each request
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  // client = new MongoClient(uri, options);
+  // clientPromise = client.connect();
+  clientPromise = new MongoClient(uri).connect();
 }
 
 export default clientPromise; 

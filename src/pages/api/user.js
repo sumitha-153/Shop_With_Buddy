@@ -20,6 +20,8 @@ export default async function handler(req, res) {
     res.json(user);
   } else if (req.method === 'PUT') {
     const { userName, shippingInfo, paymentInfo } = req.body;
+    console.log(shippingInfo);
+    
     try {
       const result = await db.collection('users').updateOne(
         { name: userName },
