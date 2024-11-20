@@ -69,7 +69,7 @@ export default function Checkout() {
   const [totalCost, setTotalCost] = useState<number>(0)
   const [quantity, setQuantity] = useState<number>(1)
   const [currentStep, setCurrentStep] = useState(1)
-  const [defaultAddressIndex, setDefaultAddressIndex] = useState(0)
+  const [defaultAddressIndex] = useState(0)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -137,11 +137,11 @@ export default function Checkout() {
     if (!shippingInfo[defaultAddressIndex]?.country) newErrors.country = 'Country is required.'
     if (!shippingInfo[defaultAddressIndex]?.state) newErrors.state = 'State is required.'
     if (!paymentInfo.cardNumber) newErrors.cardNumber = 'Card number is required.'
-    else if (!/^\d{4} \d{4} \d{4} \d{4}$/.test(paymentInfo.cardNumber)) newErrors.cardNumber = 'Card number must be in the format 1234 5678 9012 3456.'
-    if (!paymentInfo.expiryDate) newErrors.expiryDate = 'Expiry date is required.'
-    else if (!/^\d{2}\/\d{2}$/.test(paymentInfo.expiryDate)) newErrors.expiryDate = 'Expiry date must be in the format MM/YY.'
-    if (!paymentInfo.cvv) newErrors.cvv = 'CVV is required.'
-    else if (!/^\d{3}$/.test(paymentInfo.cvv)) newErrors.cvv = 'CVV must be a 3-digit number.'
+    // else if (!/^\d{4} \d{4} \d{4} \d{4}$/.test(paymentInfo.cardNumber)) newErrors.cardNumber = 'Card number must be in the format 1234 5678 9012 3456.'
+    // if (!paymentInfo.expiryDate) newErrors.expiryDate = 'Expiry date is required.'
+    // else if (!/^\d{2}\/\d{2}$/.test(paymentInfo.expiryDate)) newErrors.expiryDate = 'Expiry date must be in the format MM/YY.'
+    // if (!paymentInfo.cvv) newErrors.cvv = 'CVV is required.'
+    // else if (!/^\d{3}$/.test(paymentInfo.cvv)) newErrors.cvv = 'CVV must be a 3-digit number.'
     return newErrors
   }
 
@@ -186,6 +186,8 @@ export default function Checkout() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userName, shippingInfo, paymentInfo }),
       })
+      console.log('response', response);
+      
       toast.success('Information updated successfully!')
       setIsEditingShipping(false)
       setIsEditingPayment(false)
@@ -199,33 +201,33 @@ export default function Checkout() {
   const handleNextStep = () => setCurrentStep((prevStep) => prevStep + 1)
   const handlePreviousStep = () => setCurrentStep((prevStep) => prevStep - 1)
 
-  const handleDefaultAddressChange = (index: number) => {
-    setDefaultAddressIndex(index)
-  }
+  // const handleDefaultAddressChange = (index: number) => {
+  //   setDefaultAddressIndex(index)
+  // }
 
-  const handleAddAddress = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const response = await fetch('/api/user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userName,
-          address: shippingInfo[defaultAddressIndex].address,
-          city: shippingInfo[defaultAddressIndex].city,
-          postalCode: shippingInfo[defaultAddressIndex].postalCode,
-          country: shippingInfo[defaultAddressIndex].country,
-          state: shippingInfo[defaultAddressIndex].state,
-        }),
-      })
-      const data = await response.json()
-      setShippingInfo((prev) => [...prev, data])
-      setIsEditingShipping(false)
-    } catch (error) {
-      console.error('Failed to add address:', error)
-      toast.error('Failed to add address.')
-    }
-  }
+  // const handleAddAddress = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   try {
+  //     const response = await fetch('/api/user', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({
+  //         userName,
+  //         address: shippingInfo[defaultAddressIndex].address,
+  //         city: shippingInfo[defaultAddressIndex].city,
+  //         postalCode: shippingInfo[defaultAddressIndex].postalCode,
+  //         country: shippingInfo[defaultAddressIndex].country,
+  //         state: shippingInfo[defaultAddressIndex].state,
+  //       }),
+  //     })
+  //     const data = await response.json()
+  //     setShippingInfo((prev) => [...prev, data])
+  //     setIsEditingShipping(false)
+  //   } catch (error) {
+  //     console.error('Failed to add address:', error)
+  //     toast.error('Failed to add address.')
+  //   }
+  // }
 
   return (
     <div className="container mx-auto p-6 max-w-3xl">

@@ -1,9 +1,10 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
-import clientPromise from '@/lib/mongodb'
+import clientPromise from '@/lib/mongodb' 
 import { MongoClient } from 'mongodb'
 import jwt from 'jsonwebtoken'
+import { JWT } from 'next-auth/jwt'
 
 const NEXTAUTH_SECRET= 'cwKXUO2DrmzeqQplxFlaAwoh80KJlOEzUXAaoXVZq8A='
 console.log("Inside next-auth.js");
@@ -53,10 +54,11 @@ const options: NextAuthOptions = {
       }
       return jwt.sign(jwtClaims, secret, { algorithm: 'HS256' })
     },
-    decode: async ({ secret, token }) => {
+    decode: async ({ token }) => {
       try {
         return jwt.verify(token as string, NEXTAUTH_SECRET, { algorithms: ['HS256'] }) as JWT
       } catch (error) {
+        console.log("Error in jwt.decode: "+error);
         return null
       }
     }

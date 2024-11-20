@@ -20,6 +20,8 @@ export default async function handler(req, res) {
     res.json(user);
   } else if (req.method === 'PUT') {
     const { userName, shippingInfo, paymentInfo } = req.body;
+    console.log("Inside User.js");
+    console.log(req.body);
     console.log(shippingInfo);
     
     try {

@@ -1,86 +1,3 @@
-// import React from 'react';
-
-// interface FilterPanelProps {
-//   categories: string[];
-//   sizes: string[];
-//   colors: string[];
-//   selectedFilters: {
-//     category: string[];
-//     size: string[];
-//     color: string[];
-//     priceRange: [number, number];
-//   };
-//   onFilterChange: (filterType: string, value: string | number[]) => void;
-// }
-
-// const FilterPanel: React.FC<FilterPanelProps> = ({
-//   categories,
-//   sizes,
-//   colors,
-//   selectedFilters,
-//   onFilterChange,
-// }) => {
-//   return (
-//     <div className="border p-4 rounded-lg shadow-md bg-white">
-//       <h2 className="text-lg font-bold mb-4">Filters</h2>
-//       <div>
-//         <h3 className="font-semibold">Category</h3>
-//         {categories.map((category) => (
-//           <label key={category} className="block">
-//             <input
-//               type="checkbox"
-//               checked={selectedFilters.category.includes(category)}
-//               onChange={() => onFilterChange('category', category)}
-//             />
-//             {category}
-//           </label>
-//         ))}
-//       </div>
-//       <div>
-//         <h3 className="font-semibold">Size</h3>
-//         {sizes.map((size) => (
-//           <label key={size} className="block">
-//             <input
-//               type="checkbox"
-//               checked={selectedFilters.size.includes(size)}
-//               onChange={() => onFilterChange('size', size)}
-//             />
-//             {size}
-//           </label>
-//         ))}
-//       </div>
-//       <div>
-//         <h3 className="font-semibold">Color</h3>
-//         {colors.map((color) => (
-//           <label key={color} className="block">
-//             <input
-//               type="checkbox"
-//               checked={selectedFilters.color.includes(color)}
-//               onChange={() => onFilterChange('color', color)}
-//             />
-//             {color}
-//           </label>
-//         ))}
-//       </div>
-//       <div>
-//         <h3 className="font-semibold">Price Range</h3>
-//         <input
-//           type="range"
-//           min="0"
-//           max="1000"
-//           value={selectedFilters.priceRange[1]}
-//           onChange={(e) => onFilterChange('priceRange', [0, Number(e.target.value)])}
-//         />
-//         <span>${selectedFilters.priceRange[0]} - ${selectedFilters.priceRange[1]}</span>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FilterPanel; 
-
-
-
 import React from 'react';
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -116,7 +33,7 @@ const shopCategories = [
 ];
 
 export default function FilterPanel({
-  categories,
+  // categories,
   sizes,
   colors,
   selectedFilters,

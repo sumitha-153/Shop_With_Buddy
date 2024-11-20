@@ -97,6 +97,8 @@ export default function ProductDetail() {
         }
 
         const updatedProduct = await response.json();
+        console.log(updatedProduct);
+        
         setReviews([...reviews, { ...newReview, date: new Date().toISOString(), reviewerName: userName }]);
         setNewReview({ rating: 0, comment: '' });
       } catch (err) {

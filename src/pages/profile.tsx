@@ -133,6 +133,8 @@ export default function Profile() {
     }
        
   };
+  console.log(shippingInfo);
+  
 
   const handleDefaultAddressChange = (index: number) => {
     setDefaultAddressIndex(index);

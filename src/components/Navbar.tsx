@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Heart, ShoppingCart, Package, User, Menu } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -42,7 +42,7 @@ export default function Navbar({  userName, favoritesCount, cartCount }: NavbarP
     returnPolicy: string,
     image: string,
   }>>([]);
-  const [data, setData] = useState<Array<{
+  const [data] = useState<Array<{
     image: string,
     title: string,
     brand: string,
@@ -57,8 +57,8 @@ export default function Navbar({  userName, favoritesCount, cartCount }: NavbarP
   const router =useRouter(); 
   
 
-  const { logout } = useAuth();
-  
+  console.log(searchResults.length);
+   
 
   useEffect(() => {
     if (searchQuery) {

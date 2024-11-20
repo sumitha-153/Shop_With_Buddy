@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Heart, Star } from 'lucide-react';
+// import { Heart, Star } from 'lucide-react';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import ProductCard from '@/components/ProductCard';
 
 export default function Favorites() {
-  const { favorites,toggleFavorite} = useAuth(); // Get favorites from Auth context
+  const { favorites} = useAuth(); // Get favorites from Auth context
   const [favoriteProducts, setFavoriteProducts] = useState<Array<{ id: number; images: string[]; title: string; description: string; price: number; rating: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

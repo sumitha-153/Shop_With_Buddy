@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Heart, ShoppingCart, Star, Menu, X } from 'lucide-react';
+// import Link from 'next/link';
+import {  Menu, X } from 'lucide-react';
 import Footer from '../components/Footer';
 import SkeletonLoader from '../components/SkeletonLoader';
-import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 import ProductCard from '@/components/ProductCard';
 import FilterPanel from '@/components/FilterPanel';
 
@@ -23,7 +23,7 @@ export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { favorites, toggleFavorite, cart, toggleCart } = useAuth();
+  // const { favorites, toggleFavorite, cart, toggleCart } = useAuth();
 
   // Filter state
   const [selectedFilters, setSelectedFilters] = useState<{
@@ -112,7 +112,17 @@ export default function Products() {
     <div className="flex flex-col min-h-screen">
       <main className="container flex-1 px-4 py-8 mx-auto flex">
         {/* Backdrop overlay */}
-        {isPanelOpen && <div className="fixed inset-0 bg-black opacity-50 z-40" onClick={() => setIsPanelOpen(false)}></div>}
+        {isPanelOpen && (
+          <button
+            className="fixed inset-0 bg-black opacity-50 z-40"
+            onClick={() => setIsPanelOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                setIsPanelOpen(false);
+              }
+            }}
+          ></button>
+        )}
         
         <div className={`fixed top-0 left-0 h-full bg-white shadow-lg transition-transform duration-300 z-50 ${isPanelOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="p-4">

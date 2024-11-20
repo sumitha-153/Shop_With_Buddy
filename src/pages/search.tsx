@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import Image from 'next/image'
+// import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+// import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 interface Product {
@@ -85,7 +85,7 @@ export default function SearchResults() {
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <h3 className="text-3xl font-bold mb-6 text-center">
-        Search Results for "{q}"
+        Search Results for &quot; {q} &quot;
       </h3>
       {searchResults.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

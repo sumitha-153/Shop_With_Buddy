@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/router'
 
 export default function SignUp() {
@@ -44,7 +44,7 @@ export default function SignUp() {
       alert('Sign up successful! You can now log in.')
       router.push('/signin') // Redirect to sign in page
     } catch (err) {
-      setError(err.message)
+      setError((err as Error).message)
     }
   }
 
