@@ -36,11 +36,6 @@ export default function Favorites() {
   }, [favorites]);
 
 
-  // const handleToggleFavorite = async (productId: number) => {
-  //   await toggleFavorite(productId); // Toggle favorite status
-  //   setFavoriteProducts((prevFavorites) => prevFavorites.filter((product) => product.id !== productId)); // Update local state
-  // };
-
   if (loading) return <SkeletonLoader/>;
   if (error) return <p>Error: {error}</p>;
 

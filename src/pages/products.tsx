@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-// import Link from 'next/link';
 import {  Menu, X } from 'lucide-react';
 import Footer from '../components/Footer';
 import SkeletonLoader from '../components/SkeletonLoader';
-// import { useAuth } from '../context/AuthContext';
 import ProductCard from '@/components/ProductCard';
 import FilterPanel from '@/components/FilterPanel';
 
@@ -14,18 +12,15 @@ interface Product {
   price: number;
   images: string[];
   rating: number;
-  category: string; // Assuming category is part of the product
-  size: string; // Assuming size is part of the product
-  color: string; // Assuming color is part of the product
+  category: string;
+  size: string;
+  color: string;
 }
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // const { favorites, toggleFavorite, cart, toggleCart } = useAuth();
-
-  // Filter state
   const [selectedFilters, setSelectedFilters] = useState<{
     category: string[];
     size: string[];
@@ -155,14 +150,3 @@ export default function Products() {
   );
 }
 
-// Fetch products on each request
-export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/products'); // Adjust the URL as needed
-  const products = await res.json();
-
-  return {
-    props: {
-      products,
-    },
-  };
-} 
